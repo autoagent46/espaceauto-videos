@@ -75,8 +75,9 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
   sans aucune info non vérifiée.
 - Vérification : ouvre `<sortie>_planche.jpg` avec Read et regarde chaque image.
   **Plaques** : les véhicules du garage portent des plaques de la société « Espace Auto » (aucun numéro
-  d'immatriculation). Ces plaques sont autorisées et ne doivent pas être floutées. Utilise `--sans-floutage`
-  quand tu vois ces plaques. Seule une vraie plaque avec un numéro d'immatriculation lisible pose problème :
+  d'immatriculation). Ces plaques sont autorisées et ne doivent pas être floutées. Utilise **toujours**
+  `--sans-floutage` par défaut (le floutage automatique se trompe sur les surfaces bleu-gris) ; ne l'active
+  que si tu vois une vraie plaque bleue avec un numéro. Seule une vraie plaque avec un numéro d'immatriculation lisible pose problème :
   le floutage automatique ne reconnaît que les plaques bleues ; si un numéro reste lisible → `A valider`.
 - Photos seulement (pas de vidéo) : pas encore d'outil prêt → `A valider`, raison « montage photos à faire ».
 
