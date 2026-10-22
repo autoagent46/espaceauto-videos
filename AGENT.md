@@ -60,6 +60,9 @@ dans la colonne L pour ne pas le signaler deux fois.
 Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
 - Infos véhicule : lis https://espaceautomp.fr/ avec WebFetch (pas curl : le site est bloqué depuis le terminal),
   puis la page de l'annonce correspondante.
+- Vidéo déposée sans nom de véhicule (fichier posé directement dans Presentation, nom du type IMG_1234.MOV) :
+  identifie le véhicule en comparant la vidéo (marque, modèle, couleur, jantes) aux annonces du site.
+  Une seule annonce correspond sans aucun doute → continue avec ses infos. Plusieurs possibles ou aucune → `A valider`.
 - Transcription (vidéo où quelqu'un parle, obligatoire pour Conseil) : essaie
   `pip install --break-system-packages faster-whisper` puis un modèle « small » en français.
   Si l'installation ou le téléchargement du modèle échoue → la vidéo passe en `A valider` avec la raison
@@ -68,8 +71,10 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
   Ajoute `--garder-son` si quelqu'un parle. Les lignes d'intro : 3 lignes courtes (16 caractères max chacune),
   sans aucune info non vérifiée.
 - Vérification : ouvre `<sortie>_planche.jpg` avec Read et regarde chaque image.
-  **Limite connue** : le floutage automatique ne reconnaît que les plaques **bleues**. Les plaques françaises
-  (fond blanc) ne sont pas détectées. Si une plaque est lisible sur la planche → `A valider`, raison « plaque visible ».
+  **Plaques** : les véhicules du garage portent des plaques de la société « Espace Auto » (aucun numéro
+  d'immatriculation). Ces plaques sont autorisées et ne doivent pas être floutées. Utilise `--sans-floutage`
+  quand tu vois ces plaques. Seule une vraie plaque avec un numéro d'immatriculation lisible pose problème :
+  le floutage automatique ne reconnaît que les plaques bleues ; si un numéro reste lisible → `A valider`.
 - Photos seulement (pas de vidéo) : pas encore d'outil prêt → `A valider`, raison « montage photos à faire ».
 
 ## Étape 5 — Agent 2 : Texte
