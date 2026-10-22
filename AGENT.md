@@ -46,6 +46,9 @@ dans la colonne L pour ne pas le signaler deux fois.
 1. Liste le contenu des 4 dossiers de « 01 - A traiter » (search_files avec `parentId = '<id>'`).
    Un élément = un fichier vidéo ou photo posé directement, ou un sous-dossier (un véhicule = un sous-dossier).
 2. Traite au maximum **2 éléments** par exécution, du plus ancien au plus récent.
+   **Limite actuelle** : le connecteur Drive refuse les fichiers de plus de 10 Mo. Ignore ces fichiers
+   (laisse-les dans « 01 - A traiter », pas d'e-mail, pas de ligne dans le journal) et cite-les simplement
+   dans le résumé de fin d'exécution. Ils seront traités quand le mode « ordinateur local » sera en place.
 3. S'il n'y a rien : pas d'e-mail, fin de l'exécution.
 
 ## Étape 3 — Télécharger
