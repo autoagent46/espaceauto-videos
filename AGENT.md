@@ -62,7 +62,8 @@ dans la colonne L pour ne pas le signaler deux fois.
 
 Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
 - Infos véhicule : lis https://espaceautomp.fr/ avec WebFetch (pas curl : le site est bloqué depuis le terminal),
-  puis la page de l'annonce correspondante.
+  puis la page de l'annonce correspondante. Le site a **plusieurs pages d'annonces** : lis-les **toutes**
+  (pages 2, 3, 4… jusqu'à la dernière) avant de conclure qu'un véhicule n'est pas en vente.
 - Vidéo déposée sans nom de véhicule (fichier posé directement dans Presentation, nom du type IMG_1234.MOV) :
   identifie le véhicule en comparant la vidéo (marque, modèle, couleur, jantes) aux annonces du site.
   Une seule annonce correspond sans aucun doute → continue avec ses infos. Plusieurs possibles ou aucune → `A valider`.
