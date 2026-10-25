@@ -51,11 +51,31 @@ dans la colonne L pour ne pas le signaler deux fois.
 
 ## Étape 2 — Trouver le travail du jour
 
+Il y a deux sources de travail. Les éléments des deux sources se traitent de la même façon ensuite (agents 1 à 4).
+
+**Source A — vidéos et photos déposées**
 1. Liste le contenu des 4 dossiers de « 01 - A traiter » (search_files avec `parentId = '<id>'`).
    Un élément = un fichier vidéo ou photo posé directement, ou un sous-dossier (un véhicule = un sous-dossier).
-2. Traite au maximum **2 éléments** par exécution, du plus ancien au plus récent. Aucune limite de taille
-   (vidéos jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
-3. S'il n'y a rien : pas d'e-mail, fin de l'exécution.
+2. Un sous-dossier véhicule peut contenir, en plus des vidéos ou photos, un document ou fichier texte avec le lien
+   de l'annonce (https://espaceautomp.fr/listings/...). Si c'est le cas, utilise cette annonce pour les infos du véhicule
+   (plus besoin de deviner le modèle à partir de la vidéo).
+
+**Source B — liens d'annonce sans vidéo** (document Google Docs « Annonces a traiter », ID 1gMxpgk9Q0UXFtrhSbw6CrHM-nqpJzF4D0ixa8Af2vcY,
+à la racine de « 01 - A traiter »)
+1. Lis-le avec read_file_content. Garde seulement les lignes qui commencent par `https://espaceautomp.fr/listings/`.
+2. Un lien est **déjà traité** si la colonne L du journal contient `Annonce : <ce lien>`. Ignore-le.
+   Ne modifie jamais ce document (Raphaël y ajoute des liens ; tu ne supprimes rien).
+3. Pour un lien non traité, lis l'annonce (curl avec en-tête navigateur, voir étape 4) :
+   - annonce introuvable (404) ou marquée vendue → ligne au journal en `A valider` avec `Annonce : <lien>` en colonne L
+     et la raison, puis e-mail à Raphaël (pour ne pas retraiter le lien chaque jour) ;
+   - sinon, c'est un élément « Presentation » à faire avec les photos de l'annonce (montage photos, étape 4).
+4. Écris toujours `Annonce : <lien>` au début de la colonne L de la ligne du journal, quel que soit le statut.
+
+**Ordre et quantité**
+- Traite au maximum **2 éléments** par exécution, toutes sources confondues : d'abord les vidéos déposées (source A,
+  du plus ancien au plus récent), puis les liens (source B, dans l'ordre du document).
+- Aucune limite de taille (vidéos jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
+- S'il n'y a rien dans aucune des deux sources : pas d'e-mail, fin de l'exécution.
 
 ## Étape 3 — Télécharger
 
@@ -129,7 +149,7 @@ Dans les deux cas (Validé ou A valider) :
    Convertis en UTC avec Python (`zoneinfo`, Europe/Paris : attention au changement d'heure).
 3. Fabrique la requête : `python3 -I outils/buffer_requete.py --texte texte.txt --url <lien public> --date-utc <ISO UTC>`.
 4. Ajoute une ligne au journal (A à M remplies, K vide). Statut : `Planifié` si Validé, `A valider` sinon.
-5. Déplace le fichier ou sous-dossier source du Drive : vers « 05 - Publie » si Validé, vers « 03 - A valider » sinon.
+5. (Source A uniquement ; pour un lien d'annonce, rien à déplacer.) Déplace le fichier ou sous-dossier source du Drive : vers « 05 - Publie » si Validé, vers « 03 - A valider » sinon.
    Renomme-le en commençant par la date (AAAA-MM-JJ_...) pour le retrouver.
 6. Si `A valider` : envoie un e-mail à raphaelclep@gmail.com
    - Objet : `[EspaceAuto] Vidéo à valider : <sujet>`
