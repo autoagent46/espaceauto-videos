@@ -98,10 +98,11 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
   `curl -sS -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36" https://espaceautomp.fr/vehicules/page/<n>/`
   La liste des annonces est sur https://espaceautomp.fr/vehicules/ (puis /vehicules/page/2/ etc., jusqu'à la page qui répond 404).
   Chaque annonce a un lien https://espaceautomp.fr/listings/<modele>/ et une photo (wp-content/uploads/...) à comparer avec la vidéo.
+  Le site a **plusieurs pages d'annonces** : lis-les **toutes** (pages 2, 3, 4… jusqu'à la dernière) avant de conclure
+  qu'un véhicule n'est pas en vente.
 - Annonce introuvable après lecture de toutes les pages : applique la règle « Annonce introuvable » de `INSTRUCTIONS-RTCE.md`
   (WebSearch puis WebFetch sur le site du constructeur ou une fiche technique L'argus / Caradisiac / Auto Plus).
-  Les lignes d'intro et le bandeau peuvent afficher la motorisation (ex. « 2.5 TFSI 400 ch »), jamais prix, km ni année. Le site a **plusieurs pages d'annonces** : lis-les **toutes**
-  (pages 2, 3, 4… jusqu'à la dernière) avant de conclure qu'un véhicule n'est pas en vente.
+  L'intro et la fiche peuvent afficher la motorisation (ex. « 2.5 TFSI »), jamais prix, km ni année.
 - Vidéo déposée sans nom de véhicule (fichier posé directement dans Presentation, nom du type IMG_1234.MOV) :
   identifie le véhicule en comparant la vidéo (marque, modèle, couleur, jantes) aux annonces du site.
   Une seule annonce correspond sans aucun doute → continue avec ses infos. Plusieurs possibles ou aucune → `A valider`.
@@ -119,12 +120,14 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
   - Vidéo où quelqu'un parle : `--garder-son` sans musique si la vidéo a déjà un fond sonore ; place `--fiche-debut` quand le véhicule est à l'écran.
   - Plus de 90 s : coupe avec `--debut-source/--fin-source`, ou pose l'intro/la fin sur la vidéo (`--intro-superposee --fin-superposee`).
   - L'ancien `outils/montage.py` (avec floutage des plaques) reste disponible si une vraie plaque avec numéro doit être floutée.
-- Vérification : ouvre `<sortie>_planche.jpg` avec Read et regarde chaque image.
+- Vérification : ouvre `<sortie>_planche.jpg` avec Read et regarde chaque image (textes lisibles, rien de coupé, bon véhicule).
   **Plaques** : les véhicules du garage portent des plaques de la société « Espace Auto » (aucun numéro
-  d'immatriculation). Ces plaques sont autorisées et ne doivent pas être floutées. Utilise **toujours**
-  `--sans-floutage` par défaut (le floutage automatique se trompe sur les surfaces bleu-gris) ; ne l'active
-  que si tu vois une vraie plaque bleue avec un numéro. Seule une vraie plaque avec un numéro d'immatriculation lisible pose problème :
-  le floutage automatique ne reconnaît que les plaques bleues ; si un numéro reste lisible → `A valider`.
+  d'immatriculation). Ces plaques sont autorisées et ne doivent pas être floutées. `habillage.py` ne floute rien
+  (il n'a pas d'option de floutage : n'invente pas d'option). Si tu vois une vraie plaque avec un numéro lisible :
+  passe le rush d'abord dans l'ancien `outils/montage.py` (floutage automatique, plaques bleues seulement) ou, si un numéro
+  reste lisible, mets la vidéo en `A valider`.
+- Taille : la vidéo finale doit faire **moins de 95 Mo** (GitHub refuse au-delà de 100 Mo). Sinon, réencode-la :
+  `ffmpeg -i <vidéo> -c:v libx264 -preset veryfast -crf 26 -c:a copy -movflags +faststart <vidéo_allégée>`.
 - Photos seulement (pas de vidéo) : `python3 -I outils/habillage.py --photos "p1.jpg|p2.jpg|..." --accroche "...|...|..." --modele ... --prix ... --infos ... --musique <mp3>`
   Choisis 6 photos dans cet ordre : 3/4 avant, 3/4 avant autre côté, 3/4 arrière, jante, sièges avant, sièges arrière (ou tableau de bord).
   Sans photos dans le dossier Drive, prends celles de l'annonce du site (liens wp-content/uploads/img_..._N.jpg, en taille d'origine, dans l'ordre de la page).
@@ -144,14 +147,15 @@ Verdict : `Validé`, `Renvoyé` (tu corriges toi-même, 2 fois maximum) ou `A va
 Dans les deux cas (Validé ou A valider) :
 1. Copie la vidéo dans le dépôt : `pret-a-publier/` si Validé, `a-valider/` si A valider. Commit + push
    (message clair, se termine par les lignes d'attribution habituelles).
-2. Choisis la date (règles Agent 4 : premier jour libre dans le journal, jamais 2 publications le même jour,
+2. Choisis la date (règles Agent 4 : premier jour libre dans le journal — un jour est libre s'il n'a aucune ligne
+   `Planifié`, `Envoyé à Buffer` ou `Publié` ; une ligne `A valider` ne bloque pas son jour —, jamais 2 publications le même jour,
    au plus 3 lignes `Planifié` + `Envoyé à Buffer` futures, voir étape 2) et l'heure (lun-ven 18:00, sam 11:00, dim 18:30, heure de Paris).
    Convertis en UTC avec Python (`zoneinfo`, Europe/Paris : attention au changement d'heure).
 3. Fabrique la requête : `python3 -I outils/buffer_requete.py --texte texte.txt --url <lien public> --date-utc <ISO UTC>`.
 4. Ajoute une ligne au journal (A à M remplies, K vide). Statut : `Planifié` si Validé, `A valider` sinon.
 5. (Source A uniquement ; pour un lien d'annonce, rien à déplacer.) Déplace le fichier ou sous-dossier source du Drive : vers « 05 - Publie » si Validé, vers « 03 - A valider » sinon.
    Renomme-le en commençant par la date (AAAA-MM-JJ_...) pour le retrouver.
-6. Si `A valider` : envoie un e-mail à raphaelclep@gmail.com
+6. Si `A valider` : envoie un e-mail à raphaelclep@gmail.com (si la date prévue est déjà prise entre-temps, il devra la changer)
    - Objet : `[EspaceAuto] Vidéo à valider : <sujet>`
    - Corps : la raison précise, le lien public de la vidéo, le texte prévu, la date prévue, et la marche à suivre :
      « Pour publier : passe la ligne <n> du Journal de publication en Planifié. Pour refuser : passe-la en Erreur. »
