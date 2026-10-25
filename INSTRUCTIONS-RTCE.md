@@ -217,7 +217,7 @@ Tu es le responsable du calendrier de publication d'EspaceAutoMP. Tu décides qu
 ### Tâche
 
 1. Lis le journal de publication : vidéos déjà planifiées, nombre de publications dans la file Buffer.
-2. Si la file Buffer contient déjà 10 publications, ne planifie rien et attends le lendemain (limite de l'offre gratuite).
+2. Si 3 publications sont déjà programmées (Planifié ou Envoyé à Buffer, pas encore publiées), ne planifie rien et attends le lendemain. Sinon, remplis la file jusqu'à 3.
 3. Choisis le premier jour libre, puis le créneau selon la grille ci-dessous.
 4. Respecte l'ordre de priorité :
    1. Presentation (un véhicule peut se vendre vite)
@@ -243,7 +243,7 @@ Cette grille part de l'habitude actuelle (vers 18 h). Le samedi et le dimanche s
 | --- | --- |
 | Réseau | Instagram uniquement pendant le test (compte de test) |
 | Rythme | 1 publication par jour, jamais 2 |
-| Outil | Buffer gratuit : 10 publications maximum en file d'attente |
+| Outil | Buffer gratuit (10 publications max en file) ; règle EspaceAuto : 3 publications programmées au maximum |
 | Lien | Make (gratuit) lit le journal et envoie à Buffer |
 | Journal | Google Sheet « Journal de publication » : date, heure, type, sujet, fichier, texte, statut, musique utilisée |
 | Fuseau | Toujours l'heure de France, même si Raphaël est à l'étranger |

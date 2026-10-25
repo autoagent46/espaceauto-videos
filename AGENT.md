@@ -51,18 +51,21 @@ dans la colonne L pour ne pas le signaler deux fois.
 
 ## Étape 2 — Trouver le travail du jour
 
-Il y a deux sources de travail. Les éléments des deux sources se traitent de la même façon ensuite (agents 1 à 4).
+**Combien en faire : remplir la file jusqu'à 3.**
+Compte les lignes du journal en `Planifié` ou `Envoyé à Buffer` dont la date de publication n'est pas encore passée.
+- 3 ou plus : la file est pleine. Ne traite rien de nouveau aujourd'hui (seulement le ménage et la surveillance).
+- Moins de 3 : traite des éléments **à la chaîne**, un par un, jusqu'à ce que la file atteigne 3 (ou qu'il n'y ait plus rien).
+  Une vidéo qui finit en `A valider` ne compte pas dans la file : passe à l'élément suivant.
 
-**Source A — vidéos et photos déposées**
-1. Liste le contenu des 4 dossiers de « 01 - A traiter » (search_files avec `parentId = '<id>'`).
-   Un élément = un fichier vidéo ou photo posé directement, ou un sous-dossier (un véhicule = un sous-dossier).
-2. Un sous-dossier véhicule peut contenir, en plus des vidéos ou photos, un document ou fichier texte avec le lien
-   de l'annonce (https://espaceautomp.fr/listings/...). Si c'est le cas, utilise cette annonce pour les infos du véhicule
-   (plus besoin de deviner le modèle à partir de la vidéo).
+**Deux sources, traitées en alternance** (une vidéo déposée, puis un lien, puis une vidéo…), pour varier les publications
+et ne laisser aucune source attendre l'autre :
 
-**Source B — liens d'annonce sans vidéo** (document Google Docs « Annonces a traiter », ID 1gMxpgk9Q0UXFtrhSbw6CrHM-nqpJzF4D0ixa8Af2vcY,
-à la racine de « 01 - A traiter »)
-1. Lis-le avec read_file_content. Garde seulement les lignes qui commencent par `https://espaceautomp.fr/listings/`.
+*Source A — vidéos et photos déposées* : contenu des 4 sous-dossiers de « 01 - A traiter » (search_files avec `parentId = '<id>'`),
+du plus ancien au plus récent. Un élément = un fichier vidéo ou photo posé directement, ou un sous-dossier (un véhicule = un sous-dossier).
+
+*Source B — liens d'annonce* : un seul endroit, le document Google Docs « Annonces a traiter » posé à la racine de « 01 - A traiter »
+(ID 1gMxpgk9Q0UXFtrhSbw6CrHM-nqpJzF4D0ixa8Af2vcY). Ne cherche des liens nulle part ailleurs.
+1. Lis-le avec read_file_content. Garde seulement les lignes qui commencent par `https://espaceautomp.fr/listings/`, dans l'ordre du document.
 2. Un lien est **déjà traité** si la colonne L du journal contient `Annonce : <ce lien>`. Ignore-le.
    Ne modifie jamais ce document (Raphaël y ajoute des liens ; tu ne supprimes rien).
 3. Pour un lien non traité, lis l'annonce (curl avec en-tête navigateur, voir étape 4) :
@@ -71,11 +74,8 @@ Il y a deux sources de travail. Les éléments des deux sources se traitent de l
    - sinon, c'est un élément « Presentation » à faire avec les photos de l'annonce (montage photos, étape 4).
 4. Écris toujours `Annonce : <lien>` au début de la colonne L de la ligne du journal, quel que soit le statut.
 
-**Ordre et quantité**
-- Traite au maximum **2 éléments** par exécution, toutes sources confondues : d'abord les vidéos déposées (source A,
-  du plus ancien au plus récent), puis les liens (source B, dans l'ordre du document).
-- Aucune limite de taille (vidéos jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
-- S'il n'y a rien dans aucune des deux sources : pas d'e-mail, fin de l'exécution.
+Aucune limite de taille pour les vidéos (jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
+S'il n'y a rien dans aucune des deux sources : pas d'e-mail, fin de l'exécution.
 
 ## Étape 3 — Télécharger
 
@@ -145,7 +145,7 @@ Dans les deux cas (Validé ou A valider) :
 1. Copie la vidéo dans le dépôt : `pret-a-publier/` si Validé, `a-valider/` si A valider. Commit + push
    (message clair, se termine par les lignes d'attribution habituelles).
 2. Choisis la date (règles Agent 4 : premier jour libre dans le journal, jamais 2 publications le même jour,
-   au plus 10 lignes `Planifié` + `Envoyé à Buffer` futures) et l'heure (lun-ven 18:00, sam 11:00, dim 18:30, heure de Paris).
+   au plus 3 lignes `Planifié` + `Envoyé à Buffer` futures, voir étape 2) et l'heure (lun-ven 18:00, sam 11:00, dim 18:30, heure de Paris).
    Convertis en UTC avec Python (`zoneinfo`, Europe/Paris : attention au changement d'heure).
 3. Fabrique la requête : `python3 -I outils/buffer_requete.py --texte texte.txt --url <lien public> --date-utc <ISO UTC>`.
 4. Ajoute une ligne au journal (A à M remplies, K vide). Statut : `Planifié` si Validé, `A valider` sinon.
