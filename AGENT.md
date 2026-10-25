@@ -81,9 +81,15 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
   `pip install --break-system-packages faster-whisper` puis un modèle « small » en français.
   Si l'installation ou le téléchargement du modèle échoue → la vidéo passe en `A valider` avec la raison
   « transcription impossible » (sauf si le nom du fichier donne le sujet).
-- Montage : `python3 -I outils/montage.py --source <rush> --musique <mp3> --sortie <AAAA-MM-JJ_type_sujet.mp4> --intro "Ligne 1|Ligne 2|Ligne dorée"`
-  Ajoute `--garder-son` si quelqu'un parle. Les lignes d'intro : 3 lignes courtes (16 caractères max chacune),
-  sans aucune info non vérifiée.
+- Montage : `python3 -I outils/habillage.py` (habillage animé : logo qui se construit, accroche ligne par ligne,
+  fiche véhicule animée avec prix et caractéristiques en pastilles, badge VENDUE, écran de fin animé). Voir l'aide en tête du fichier.
+  - Présentation en vente : `--modele "MARQUE MODÈLE" --version "motorisation finition" --prix "6 990 €" --infos "km|carburant|année|boîte"`
+    (toutes ces infos viennent de l'annonce du site, ou des infos génériques sourcées si l'annonce est introuvable — jamais de prix/km/année inventés).
+  - Véhicule vendu : `--vendu` (badge VENDUE permanent, pas de prix, fin « Vous voulez vendre la vôtre ? »).
+  - Rush court sans voix : `--accroche "Ligne 1|Ligne dorée|Ligne dorée" --musique <mp3> --volume-source -10`.
+  - Vidéo où quelqu'un parle : `--garder-son` sans musique si la vidéo a déjà un fond sonore ; place `--fiche-debut` quand le véhicule est à l'écran.
+  - Plus de 90 s : coupe avec `--debut-source/--fin-source`, ou pose l'intro/la fin sur la vidéo (`--intro-superposee --fin-superposee`).
+  - L'ancien `outils/montage.py` (avec floutage des plaques) reste disponible si une vraie plaque avec numéro doit être floutée.
 - Vérification : ouvre `<sortie>_planche.jpg` avec Read et regarde chaque image.
   **Plaques** : les véhicules du garage portent des plaques de la société « Espace Auto » (aucun numéro
   d'immatriculation). Ces plaques sont autorisées et ne doivent pas être floutées. Utilise **toujours**
