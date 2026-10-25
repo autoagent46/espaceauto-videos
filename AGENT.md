@@ -77,6 +77,15 @@ du plus ancien au plus récent. Un élément = un fichier vidéo ou photo posé 
    - sinon, c'est un élément « Presentation » à faire avec les photos de l'annonce (montage photos, étape 4).
 4. Écris toujours `Annonce : <lien>` au début de la colonne L de la ligne du journal, quel que soit le statut.
 
+**Une seule publication par annonce (pas de doublon)** : dès qu'un élément (vidéo déposée ou lien) est rattaché à une annonce
+du site, écris `Annonce : <lien de l'annonce>` au début de la colonne L de sa ligne du journal. Avant de traiter un élément,
+si son annonce figure déjà en colonne L d'une ligne `Planifié`, `Envoyé à Buffer` ou `Publié`, ne le refais pas :
+- un lien → ignoré (déjà traité) ;
+- une vidéo déposée → `A valider` avec la raison « annonce déjà publiée le <date> » (Raphaël décide s'il veut une 2e vidéo).
+
+**Nom de fichier** : si le nom d'une vidéo déposée contient un lien d'annonce ou le nom de l'annonce tel qu'il apparaît dans le lien
+(ex. `volkswagen-tiguan-2-0-tdi-150ch-dsg7-r-line`), utilise directement cette annonce, sans chercher à identifier le véhicule.
+
 Aucune limite de taille pour les vidéos (jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
 S'il n'y a rien dans aucune des deux sources : pas d'e-mail, fin de l'exécution.
 
