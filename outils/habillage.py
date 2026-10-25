@@ -248,9 +248,54 @@ def poser(fr, calque):
     return (fr * (1 - al) + c[..., :3] * al)
 
 
+
+def photos_vers_clip(chemins, sortie, par_photo=2.6, xf=0.5):
+    """Diaporama vertical à partir de photos d'annonce (souvent horizontales) :
+    fond = photo floutée et assombrie, photo nette au centre avec un lent zoom et un léger glissement."""
+    prep = []
+    for c in chemins:
+        im = Image.open(c).convert('RGB')
+        s = max(W / im.width, H / im.height)
+        fond = im.resize((int(im.width * s) + 1, int(im.height * s) + 1), Image.LANCZOS)
+        fond = fond.crop(((fond.width - W) // 2, (fond.height - H) // 2, (fond.width - W) // 2 + W, (fond.height - H) // 2 + H))
+        fond = np.asarray(fond.filter(ImageFilter.GaussianBlur(40)), dtype=np.float32) * 0.45
+        lw = int(W * 0.94); lh = int(im.height * lw / im.width)
+        if lh > H * 0.62: lh = int(H * 0.62); lw = int(im.width * lh / im.height)
+        net = im.resize((int(lw * 1.12), int(lh * 1.12)), Image.LANCZOS)
+        masque = Image.new('L', (lw, lh), 0); ImageDraw.Draw(masque).rounded_rectangle((0, 0, lw - 1, lh - 1), radius=28, fill=255)
+        prep.append((fond, net, masque, lw, lh))
+    n_par = int(par_photo * FPS); n_xf = int(xf * FPS)
+    total = len(prep) * n_par - (len(prep) - 1) * n_xf
+    pr = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
+                           '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'veryfast', sortie], stdin=subprocess.PIPE)
+
+    def image(i, k):
+        fond, net, masque, lw, lh = prep[i]; q = k / max(1, n_par - 1)
+        z = 1.0 + 0.10 * q; sens = 1 if i % 2 == 0 else -1
+        w2, h2 = int(lw * z), int(lh * z)
+        r = net.resize((w2, h2), Image.BILINEAR)
+        dx = int((w2 - lw) / 2 + sens * (w2 - lw) * 0.35 * (q - 0.5))
+        r = r.crop((dx, (h2 - lh) // 2, dx + lw, (h2 - lh) // 2 + lh))
+        img = Image.fromarray(fond.astype('uint8'))
+        cy = int(H * 0.40)
+        ombre = Image.new('RGBA', (W, H)); ImageDraw.Draw(ombre).rounded_rectangle(((W - lw) // 2 + 8, cy - lh // 2 + 18, (W + lw) // 2 + 8, cy + lh // 2 + 18), radius=28, fill=(0, 0, 0, 140))
+        img = img.convert('RGBA'); img.alpha_composite(ombre.filter(ImageFilter.GaussianBlur(18)))
+        img.paste(r, ((W - lw) // 2, cy - lh // 2), masque)
+        return np.asarray(img.convert('RGB'), dtype=np.float32)
+
+    for f in range(total):
+        i = min(f // (n_par - n_xf), len(prep) - 1); k = f - i * (n_par - n_xf)
+        fr = image(i, k)
+        if i + 1 < len(prep) and k >= n_par - n_xf:
+            al = (k - (n_par - n_xf)) / n_xf; fr = fr * (1 - al) + image(i + 1, k - (n_par - n_xf)) * al
+        pr.stdin.write(np.clip(fr, 0, 255).astype('uint8').tobytes())
+    pr.stdin.close(); pr.wait()
+    return total / FPS
+
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--source', required=True); p.add_argument('--sortie', required=True)
+    p.add_argument('--source', default=None); p.add_argument('--photos', default='', help='photos séparées par |, à la place de --source')
+    p.add_argument('--par-photo', type=float, default=2.6); p.add_argument('--sortie', required=True)
     p.add_argument('--modele', default=''); p.add_argument('--version', default=''); p.add_argument('--prix', default='')
     p.add_argument('--infos', default=''); p.add_argument('--accroche', default='')
     p.add_argument('--vendu', action='store_true')
@@ -261,6 +306,11 @@ def main():
     p.add_argument('--garder-son', action='store_true'); p.add_argument('--volume-source', type=float, default=None)
     p.add_argument('--duree-max', type=float, default=90)
     a = p.parse_args()
+    if a.photos:
+        a.source = a.sortie + '.photos.mp4'
+        photos_vers_clip([c for c in a.photos.split('|') if c], a.source, a.par_photo)
+        a.garder_son = False; a.volume_source = None
+    elif not a.source: raise SystemExit('--source ou --photos obligatoire')
     accroche = [s for s in a.accroche.split('|') if s]
     d_intro = 3.4 if accroche else 1.8
     d_fin = 3.6
@@ -330,6 +380,7 @@ def main():
     subprocess.run(['ffmpeg', '-v', 'error', '-y', *entrees, '-filter_complex', ';'.join(filtres), '-map', '0:v', '-map', '[a]',
                     '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-t', f'{duree:.3f}', '-movflags', '+faststart', a.sortie], check=True)
     os.remove(tmp)
+    if a.photos: os.remove(a.source)
     while len(planche) % 6: planche.append(np.zeros_like(planche[0]))
     pl = np.vstack([np.hstack(planche[i:i + 6]) for i in range(0, len(planche), 6)])
     Image.fromarray(pl).save(os.path.splitext(a.sortie)[0] + '_planche.jpg', quality=85)

@@ -97,7 +97,10 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
   `--sans-floutage` par défaut (le floutage automatique se trompe sur les surfaces bleu-gris) ; ne l'active
   que si tu vois une vraie plaque bleue avec un numéro. Seule une vraie plaque avec un numéro d'immatriculation lisible pose problème :
   le floutage automatique ne reconnaît que les plaques bleues ; si un numéro reste lisible → `A valider`.
-- Photos seulement (pas de vidéo) : pas encore d'outil prêt → `A valider`, raison « montage photos à faire ».
+- Photos seulement (pas de vidéo) : `python3 -I outils/habillage.py --photos "p1.jpg|p2.jpg|..." --accroche "...|...|..." --modele ... --prix ... --infos ... --musique <mp3>`
+  Choisis 6 photos dans cet ordre : 3/4 avant, 3/4 avant autre côté, 3/4 arrière, jante, sièges avant, sièges arrière (ou tableau de bord).
+  Sans photos dans le dossier Drive, prends celles de l'annonce du site (liens wp-content/uploads/img_..._N.jpg, en taille d'origine, dans l'ordre de la page).
+  Durée visée 18 à 20 s (6 photos de 2,6 s).
 
 ## Étape 5 — Agent 2 : Texte
 
