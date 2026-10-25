@@ -45,18 +45,23 @@ dans la colonne L pour ne pas le signaler deux fois.
 
 1. Liste le contenu des 4 dossiers de « 01 - A traiter » (search_files avec `parentId = '<id>'`).
    Un élément = un fichier vidéo ou photo posé directement, ou un sous-dossier (un véhicule = un sous-dossier).
-2. Traite au maximum **2 éléments** par exécution, du plus ancien au plus récent.
-   **Limite actuelle** : le connecteur Drive refuse les fichiers de plus de 10 Mo. Ignore ces fichiers
-   (laisse-les dans « 01 - A traiter », pas d'e-mail, pas de ligne dans le journal) et cite-les simplement
-   dans le résumé de fin d'exécution. Ils seront traités quand le mode « ordinateur local » sera en place.
+2. Traite au maximum **2 éléments** par exécution, du plus ancien au plus récent. Aucune limite de taille
+   (vidéos jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
 3. S'il n'y a rien : pas d'e-mail, fin de l'exécution.
 
 ## Étape 3 — Télécharger
 
-- `download_file_content` sur chaque fichier. Les gros fichiers sont enregistrés par l'outil dans un fichier
-  `tool-results/...txt` (le chemin est donné dans l'erreur « exceeds maximum allowed tokens ») :
-  décode-le avec `python3 -I outils/drive_decode.py <ce fichier> <sortie>`.
-- Télécharge aussi une musique du dossier Musiques, différente de celle de la dernière ligne du journal (colonne I).
+- **Rushes** (tout ce qui est dans « 01 - A traiter ») : téléchargement direct, sans passer par le connecteur Drive.
+  Le dossier « 01 - A traiter » est partagé en lecture « Tous les utilisateurs disposant du lien » (depuis le 25/10/2026),
+  et les domaines Google Drive sont autorisés dans l'espace de travail :
+  `curl -sSL -o <sortie> "https://drive.usercontent.google.com/download?id=<ID du fichier>&export=download&confirm=t"`
+  (`confirm=t` passe l'avertissement de Google sur les gros fichiers). Vérifie ensuite avec `file <sortie>` que c'est bien
+  une vidéo ou une image : une page HTML veut dire que le partage a été retiré → e-mail à Raphaël, fichier laissé en place.
+- Sous-dossier véhicule : liste ses fichiers avec search_files (`parentId = '<id du sous-dossier>'`), puis télécharge-les un par un.
+- **Musique** : le dossier Musiques n'est pas partagé publiquement. Utilise `download_file_content` (fichiers de moins de 10 Mo).
+  Si l'outil enregistre le résultat dans un fichier `tool-results/...txt`, décode-le avec `python3 -I outils/drive_decode.py <ce fichier> <sortie>`.
+  Choisis une musique différente de celle de la dernière ligne du journal (colonne I).
+- Ne partage jamais d'autre dossier « avec le lien » : seul « 01 - A traiter » l'est.
 
 ## Étape 4 — Agent 1 : Vidéo
 
