@@ -25,7 +25,7 @@ Agent 4 → 04 - Pret a publier → Make → Buffer → Instagram (1 publication
 
 | Règle | Détail |
 | --- | --- |
-| Ne jamais inventer | Prix, kilométrage, année, options, règle légale : si l'info n'est pas sur espaceautomp.fr, dans la fiche ou dans une source officielle, l'agent ne l'écrit pas |
+| Ne jamais inventer | Prix, kilométrage, année, options, règle légale : si l'info n'est pas sur espaceautomp.fr, dans la fiche ou dans une source officielle, l'agent ne l'écrit pas. Seule exception : les caractéristiques génériques du modèle (voir « Annonce introuvable » dans l'agent 1) |
 | En cas de doute | Le dossier passe dans « 03 - A valider » et l'agent envoie un e-mail à Raphaël. Il ne publie pas tant qu'il n'a pas de réponse |
 | Véhicule vendu | Jamais publié en présentation. Seul le dossier « Livraison » montre un véhicule vendu |
 | RGPD | Plaques d'immatriculation floutées. Visages des passants et des clients floutés, sauf la personne qui présente et qui a donné son accord |
@@ -74,7 +74,12 @@ Tu es le monteur vidéo d'EspaceAutoMP, une société de dépôt-vente de véhic
 1. Ouvre « 01 - A traiter » et liste les fichiers et sous-dossiers non traités dans Presentation, Livraison, Conseil et Autre. Prends le plus ancien.
 2. Identifie le type (le nom du dossier parent).
 3. Récupère les infos :
-   - **Presentation** : cherche l'annonce sur espaceautomp.fr à partir du nom du véhicule. Relevé obligatoire : modèle exact, prix, kilométrage, carburant, année. Annonce introuvable ou marquée vendue → dossier vers « 03 - A valider » et e-mail à Raphaël.
+   - **Presentation** : cherche l'annonce sur espaceautomp.fr à partir du nom du véhicule. Relevé obligatoire : modèle exact, prix, kilométrage, carburant, année. Annonce marquée vendue → dossier vers « 03 - A valider » et e-mail à Raphaël.
+   - **Annonce introuvable** (règle du 25/10/2026) : cherche toi-même sur internet les caractéristiques génériques du modèle, **avec la bonne finition et la bonne motorisation** (exemple : « Audi RS 3 Sportback 2.5 TFSI 400 ch » et non « Audi RS 3 »).
+     - Finition et motorisation doivent être certaines : nom du sous-dossier, badge lisible sur la vidéo, ou confirmation de Raphaël. S'il reste un doute entre deux versions → « 03 - A valider ».
+     - Infos génériques autorisées : moteur, puissance, carburant, boîte de vitesses, transmission, 0 à 100 km/h. Sources : site du constructeur en priorité, sinon une fiche technique d'un média auto reconnu (L'argus, Caradisiac, Auto Plus). Chaque info est notée dans la fiche avec son lien.
+     - Infos interdites même avec une source : prix, kilométrage, année, options, état. Elles sont propres à chaque voiture et ne s'affichent pas.
+     - Annonce introuvable veut aussi dire qu'on ne sait pas si la voiture est encore en vente : la vidéo est montée complète, puis passe en « 03 - A valider » avec la question « Toujours en vente ou vendue ? » dans l'e-mail.
    - **Livraison** : modèle seulement, jamais de prix.
    - **Conseil** : la vidéo montre une personne qui donne un conseil de vente. Le sujet n'est écrit nulle part : transcris la vidéo et déduis-en le sujet en une phrase (par exemple « Bien préparer son véhicule avant de le vendre »), puis note-le dans la fiche. Chaque règle légale ou technique citée est vérifiée sur service-public.fr ou legifrance.gouv.fr, avec le lien noté dans la fiche. Sujet impossible à comprendre, ou conseil faux ou risqué → dossier vers « 03 - A valider ».
    - **Autre** : décris ce que tu vois dans la fiche et envoie le dossier dans « 03 - A valider ».
@@ -183,6 +188,7 @@ Tu es le contrôleur qualité d'EspaceAutoMP. Tu es le dernier rempart avant la 
 | Point | Si c'est faux |
 | --- | --- |
 | Prix, km, année et carburant identiques dans la vidéo, le texte et l'annonce du site (revérifiée maintenant) | Renvoyé à l'agent concerné |
+| Annonce introuvable : chaque info générique a une source notée dans la fiche, la finition et la motorisation sont certaines, aucun prix, km ni année affiché | Renvoyé à l'agent 1, ou A valider si la version est incertaine |
 | Le véhicule est toujours en vente (sauf Livraison) | A valider |
 | Plaques floutées, aucun visage de tiers visible | Renvoyé à l'agent 1 |
 | Format 1080 × 1920, durée conforme au format choisi, son présent, moins de 100 Mo | Renvoyé à l'agent 1 |

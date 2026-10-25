@@ -64,7 +64,10 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
 - Infos véhicule : lis le site avec curl **en se présentant comme un navigateur** (sans ça, le site répond 403) :
   `curl -sS -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36" https://espaceautomp.fr/vehicules/page/<n>/`
   La liste des annonces est sur https://espaceautomp.fr/vehicules/ (puis /vehicules/page/2/ etc., jusqu'à la page qui répond 404).
-  Chaque annonce a un lien https://espaceautomp.fr/listings/<modele>/ et une photo (wp-content/uploads/...) à comparer avec la vidéo. Le site a **plusieurs pages d'annonces** : lis-les **toutes**
+  Chaque annonce a un lien https://espaceautomp.fr/listings/<modele>/ et une photo (wp-content/uploads/...) à comparer avec la vidéo.
+- Annonce introuvable après lecture de toutes les pages : applique la règle « Annonce introuvable » de `INSTRUCTIONS-RTCE.md`
+  (WebSearch puis WebFetch sur le site du constructeur ou une fiche technique L'argus / Caradisiac / Auto Plus).
+  Les lignes d'intro et le bandeau peuvent afficher la motorisation (ex. « 2.5 TFSI 400 ch »), jamais prix, km ni année. Le site a **plusieurs pages d'annonces** : lis-les **toutes**
   (pages 2, 3, 4… jusqu'à la dernière) avant de conclure qu'un véhicule n'est pas en vente.
 - Vidéo déposée sans nom de véhicule (fichier posé directement dans Presentation, nom du type IMG_1234.MOV) :
   identifie le véhicule en comparant la vidéo (marque, modèle, couleur, jantes) aux annonces du site.
