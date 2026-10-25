@@ -65,7 +65,10 @@ du plus ancien au plus récent. Un élément = un fichier vidéo ou photo posé 
 
 *Source B — liens d'annonce* : un seul endroit, le document Google Docs « Annonces a traiter » posé à la racine de « 01 - A traiter »
 (ID 1gMxpgk9Q0UXFtrhSbw6CrHM-nqpJzF4D0ixa8Af2vcY). Ne cherche des liens nulle part ailleurs.
-1. Lis-le avec read_file_content. Garde seulement les lignes qui commencent par `https://espaceautomp.fr/listings/`, dans l'ordre du document.
+1. Lis-le avec read_file_content, puis extrais **tous** les liens d'annonce où qu'ils soient dans le texte
+   (Google Docs les met parfois sur une seule ligne, entourés de `<…>`) :
+   `python3 -c "import re,sys; print('\n'.join(dict.fromkeys(re.findall(r'https://espaceautomp\.fr/listings/[^\s<>\"]+', sys.stdin.read()))))"`
+   en lui envoyant le texte du document. Garde l'ordre d'apparition, sans doublon, et normalise chaque lien avec un `/` final.
 2. Un lien est **déjà traité** si la colonne L du journal contient `Annonce : <ce lien>`. Ignore-le.
    Ne modifie jamais ce document (Raphaël y ajoute des liens ; tu ne supprimes rien).
 3. Pour un lien non traité, lis l'annonce (curl avec en-tête navigateur, voir étape 4) :
