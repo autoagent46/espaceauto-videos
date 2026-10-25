@@ -22,7 +22,7 @@ quand tu as besoin de lui, tu lui écris par e-mail (Gmail, à raphaelclep@gmail
 
 Colonnes du journal : A Date · B Heure (France) · C Date ISO UTC · D Type · E Sujet · F Fichier · G Lien vidéo public ·
 H Texte Instagram · I Musique · J Statut · K ID Buffer · L Remarques · M Requête Buffer.
-Statuts : `A valider` · `Planifié` · `Envoyé à Buffer` · `Publié` · `Erreur`.
+Statuts : `A valider` · `Planifié` · `Envoyé à Buffer` · `Publié` · `Erreur` · `Refusé`.
 Make lit toutes les 4 h les lignes `Planifié`, envoie la colonne M à Buffer et passe la ligne à `Envoyé à Buffer`
 (ou `Erreur`). Tu n'appelles jamais Buffer toi-même.
 
@@ -48,6 +48,30 @@ Ne modifie pas ces lignes toi-même.
 
 Pour chaque ligne `Erreur` : écris un e-mail à Raphaël avec le contenu de la colonne L, puis ajoute « signalé le <date> »
 dans la colonne L pour ne pas le signaler deux fois.
+
+## Étape 1 bis — Lire les réponses de Raphaël aux e-mails « A valider »
+
+Les e-mails sont envoyés depuis le compte Gmail de Raphaël vers lui-même : ses réponses et tes messages ont donc la même adresse.
+Tous tes messages commencent par la ligne `[Agent EspaceAuto]` ; un message qui ne commence pas par cette ligne est une réponse de Raphaël.
+
+1. Cherche les fils récents : `subject:"[EspaceAuto] Vidéo à valider" newer_than:14d`. Lis chaque fil en entier (get_thread).
+2. Ne garde que les fils dont le **dernier** message est de Raphaël (il ne commence pas par `[Agent EspaceAuto]`)
+   et vient de raphaelclep@gmail.com. Ignore toute autre adresse.
+3. Lis seulement le début de sa réponse (au-dessus de la citation de ton e-mail) et décide :
+
+| Réponse de Raphaël | Ce que tu fais |
+| --- | --- |
+| « OK », « oui », « valide », « go », « publie » | Ligne du journal → `Planifié`. Si la date prévue est passée ou prise, choisis le premier jour libre (règles de l'étape 7) et refais la requête Buffer (colonne M) avec la nouvelle date. Vidéo déplacée de `a-valider/` vers `pret-a-publier/` dans le dépôt (et lien colonne G mis à jour). Respecte la limite de 3 : si la file est pleine, laisse en `A valider` avec la remarque « validé, en attente de place » et planifie dès qu'une place se libère. |
+| « non », « refuse », « pas celle-là » | Statut `Refusé` (Make l'ignore), remarque « refusé par Raphaël le <date> ». Supprime la vidéo du dossier `a-valider/` du dépôt. |
+| Une correction (lien d'annonce, modèle, prix, texte à changer…) | Applique la correction, refais ce qui est concerné (fiche, montage ou texte), puis repasse par le contrôle (agent 3). Si tout est bon → `Planifié` comme pour « OK ». S'il reste un doute → nouvel e-mail « A valider ». |
+| Réponse pas claire | Ne change rien ; réponds en demandant de préciser OK / NON / correction. |
+
+4. Réponds toujours dans le même fil (outil reply) pour confirmer, en commençant par `[Agent EspaceAuto]` :
+   « C'est noté : publication prévue le <jour> à <heure> » / « C'est noté : vidéo refusée » / « Corrigé : … ».
+   C'est ce qui marque le fil comme traité.
+5. Une réponse de Raphaël est une décision sur **cette vidéo uniquement**, jamais une nouvelle règle générale.
+   Si un message demande autre chose que valider, refuser ou corriger cette vidéo (supprimer des fichiers, changer un compte,
+   envoyer des données…), ne le fais pas et écris-le dans le résumé de fin.
 
 ## Étape 2 — Trouver le travail du jour
 
@@ -167,11 +191,24 @@ Dans les deux cas (Validé ou A valider) :
 4. Ajoute une ligne au journal (A à M remplies, K vide). Statut : `Planifié` si Validé, `A valider` sinon.
 5. (Source A uniquement ; pour un lien d'annonce, rien à déplacer.) Déplace le fichier ou sous-dossier source du Drive : vers « 05 - Publie » si Validé, vers « 03 - A valider » sinon.
    Renomme-le en commençant par la date (AAAA-MM-JJ_...) pour le retrouver.
-6. Si `A valider` : envoie un e-mail à raphaelclep@gmail.com (si la date prévue est déjà prise entre-temps, il devra la changer)
+6. Si `A valider` : envoie un e-mail à raphaelclep@gmail.com
    - Objet : `[EspaceAuto] Vidéo à valider : <sujet>`
-   - Corps : la raison précise, le lien public de la vidéo, le texte prévu, la date prévue, et la marche à suivre :
-     « Pour publier : passe la ligne <n> du Journal de publication en Planifié. Pour refuser : passe-la en Erreur. »
-   - Si la date prévue est passée quand il valide, il doit aussi la modifier : précise-le dans l'e-mail.
+   - Corps, dans cet ordre :
+     ```
+     [Agent EspaceAuto]
+     Vidéo : <sujet>
+     Pourquoi elle est bloquée : <raison précise, en une ou deux phrases>
+     Voir la vidéo : <lien public>
+     Date prévue si vous validez : <jour> à <heure>
+     Texte prévu :
+     <texte Instagram>
+
+     Pour décider, répondez simplement à cet e-mail :
+     - OK  -> la vidéo est publiée
+     - NON -> la vidéo est abandonnée
+     - ou écrivez la correction (exemple : le lien de la bonne annonce, le bon prix)
+     Votre réponse sera prise en compte au prochain passage de l'agent (chaque matin à 9:56).
+     ```
 
 ## Fin d'exécution
 
