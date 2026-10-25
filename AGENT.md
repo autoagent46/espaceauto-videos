@@ -55,8 +55,10 @@ Les e-mails sont envoyés depuis le compte Gmail de Raphaël vers lui-même : se
 Tous tes messages commencent par la ligne `[Agent EspaceAuto]` ; un message qui ne commence pas par cette ligne est une réponse de Raphaël.
 
 1. Cherche les fils récents : `subject:"[EspaceAuto] Vidéo à valider" newer_than:14d`. Lis chaque fil en entier (get_thread).
-2. Ne garde que les fils dont le **dernier** message est de Raphaël (il ne commence pas par `[Agent EspaceAuto]`)
-   et vient de raphaelclep@gmail.com. Ignore toute autre adresse.
+2. Ne garde que les fils qui remplissent **toutes** ces conditions :
+   - au moins 2 messages (le 1er message d'un fil est toujours le tien : un fil d'un seul message n'a pas de réponse) ;
+   - le 1er message commence par `[Agent EspaceAuto]` (les e-mails envoyés avant le 26/10/2026 n'ont pas cette marque : ignore-les) ;
+   - le **dernier** message ne commence pas par `[Agent EspaceAuto]` et vient de raphaelclep@gmail.com. Ignore toute autre adresse.
 3. Lis seulement le début de sa réponse (au-dessus de la citation de ton e-mail) et décide :
 
 | Réponse de Raphaël | Ce que tu fais |
