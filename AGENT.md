@@ -38,6 +38,14 @@ Lis le journal. Pour chaque ligne `Envoyé à Buffer` dont la date + heure est p
 - passe le statut à `Publié` ;
 - supprime la vidéo du dépôt (dossier `pret-a-publier/` ou `a-valider/`), commit, push.
 
+**Surveillance de Make** (Make ne prévient pas toujours par e-mail quand il plante) : pour chaque ligne `Planifié`
+dont la date + heure de publication est passée, ou arrive dans moins de 6 h, Make n'a pas fait son travail
+(il passe toutes les 4 h). Envoie un e-mail à Raphaël :
+- Objet : `[EspaceAuto] ALERTE Make : publication non envoyée à Buffer`
+- Corps : les lignes concernées (date, sujet) et la marche à suivre : « Ouvre Make > Scenarios > Integration Google Sheets, HTTP >
+  History. Si le scénario est désactivé, réactive-le ; s'il y a une ligne rouge, envoie une capture dans le projet. »
+Ne modifie pas ces lignes toi-même.
+
 Pour chaque ligne `Erreur` : écris un e-mail à Raphaël avec le contenu de la colonne L, puis ajoute « signalé le <date> »
 dans la colonne L pour ne pas le signaler deux fois.
 
