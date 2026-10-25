@@ -86,7 +86,8 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
   - Présentation en vente : `--modele "MARQUE MODÈLE" --version "motorisation finition" --prix "6 990 €" --infos "km|carburant|année|boîte"`
     (toutes ces infos viennent de l'annonce du site, ou des infos génériques sourcées si l'annonce est introuvable — jamais de prix/km/année inventés).
   - Véhicule vendu : `--vendu` (badge VENDUE permanent, pas de prix, fin « Vous voulez vendre la vôtre ? »).
-  - Rush court sans voix : `--accroche "Ligne 1|Ligne dorée|Ligne dorée" --musique <mp3> --volume-source -10`.
+  - Rush sans voix (images ou vidéos de voiture seules) : `--accroche "Ligne 1|Ligne dorée|Ligne dorée" --musique <mp3> --volume-musique -16`
+    (musique douce, environ -27 LUFS ; pas de son d'origine).
   - Vidéo où quelqu'un parle : `--garder-son` sans musique si la vidéo a déjà un fond sonore ; place `--fiche-debut` quand le véhicule est à l'écran.
   - Plus de 90 s : coupe avec `--debut-source/--fin-source`, ou pose l'intro/la fin sur la vidéo (`--intro-superposee --fin-superposee`).
   - L'ancien `outils/montage.py` (avec floutage des plaques) reste disponible si une vraie plaque avec numéro doit être floutée.

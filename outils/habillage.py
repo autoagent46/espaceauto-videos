@@ -257,7 +257,7 @@ def main():
     p.add_argument('--debut-source', type=float, default=0); p.add_argument('--fin-source', type=float, default=None)
     p.add_argument('--intro-superposee', action='store_true'); p.add_argument('--fin-superposee', action='store_true')
     p.add_argument('--fiche-debut', type=float, default=1.0); p.add_argument('--fiche-duree', type=float, default=7.0)
-    p.add_argument('--musique', default=None); p.add_argument('--volume-musique', type=float, default=-12)
+    p.add_argument('--musique', default=None); p.add_argument('--volume-musique', type=float, default=-16)
     p.add_argument('--garder-son', action='store_true'); p.add_argument('--volume-source', type=float, default=None)
     p.add_argument('--duree-max', type=float, default=90)
     a = p.parse_args()
