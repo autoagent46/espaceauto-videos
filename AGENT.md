@@ -160,8 +160,11 @@ si son annonce figure déjà en colonne L d'une ligne `Planifié`, `Envoyé à B
 
 **Nom de fichier** : si le nom d'une vidéo déposée contient un lien d'annonce ou le nom de l'annonce tel qu'il apparaît dans le lien
 (ex. `volkswagen-tiguan-2-0-tdi-150ch-dsg7-r-line`), utilise directement cette annonce, sans chercher à identifier le véhicule.
-**Vidéo déposée dans « Presentation » sans nom d'annonce** (règle de Raphaël du 26/10/2026) : monte-la quand même (identification
-visuelle comme à l'étape 4 pour remplir la fiche), puis mets-la **toujours en `A valider`** avec la raison « vidéo déposée sans le nom
+**Vidéo déposée dans « Presentation » sans nom d'annonce** (règle de Raphaël du 26/10/2026) : Raphaël ne renomme pas les fichiers,
+c'est toi qui le fais. Identifie le véhicule visuellement (étape 4) ; dès qu'une seule annonce correspond, **renomme le fichier dans Drive**
+(update_file, champ title) avec le nom de l'annonce tel qu'il apparaît dans son lien, en gardant l'extension
+(ex. `seat-leon-2-0-tdi-150-dsg7-style.mp4`). Si plusieurs annonces sont possibles ou aucune, ne renomme pas.
+Monte-la ensuite, puis mets-la **toujours en `A valider`** avec la raison « vidéo déposée sans le nom
 de l'annonce : véhicule identifié visuellement, à confirmer ». Exception : les fichiers déjà présents dans « Presentation » le 26/10/2026
 (créés avant le 2026-10-26T00:00:00Z) suivent l'ancienne règle : si une seule annonce correspond sans aucun doute, ils peuvent être planifiés
 sans validation.
