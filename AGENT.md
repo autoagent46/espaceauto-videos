@@ -49,7 +49,37 @@ Ne modifie pas ces lignes toi-même.
 Pour chaque ligne `Erreur` : écris un e-mail à Raphaël avec le contenu de la colonne L, puis ajoute « signalé le <date> »
 dans la colonne L pour ne pas le signaler deux fois.
 
-## Étape 1 bis — Lire les réponses de Raphaël aux e-mails « A valider »
+**Validation directe dans le journal** : Raphaël peut valider une vidéo lui-même en passant sa ligne de `A valider` à
+`Planifié` dans le Google Sheet (c'est ce qu'il a fait pour la vidéo du 24/10). C'est une validation normale : ne la signale pas,
+même si la colonne L parle encore de « A valider ».
+
+## Étape 1 bis — Revérifier les annonces (prix en baisse, voiture vendue)
+
+Chaque jour, même quand la file est pleine. Pour chaque annonce citée en colonne L (`Annonce : <lien>`) d'une ligne
+`Planifié`, `Envoyé à Buffer` ou `Publié` (une seule fois par annonce), relis l'annonce sur le site (curl, étape 4) et relève le prix.
+
+**Prix de référence** de l'annonce = le dernier prix connu dans le journal, dans cet ordre : la mention `Prix : <prix>` en colonne L
+de la ligne la plus récente de cette annonce ; sinon le prix écrit dans son texte (colonne H, ligne « - X € ») ou dans sa remarque.
+Écris toujours `Prix : <prix>` en colonne L des nouvelles lignes (juste après `Annonce : <lien>`) pour garder ce suivi.
+
+| Ce que tu constates | Ce que tu fais |
+| --- | --- |
+| Publication encore à venir (`Planifié` ou `Envoyé à Buffer`, date pas passée) dont l'annonce est vendue, introuvable (404) ou dont le prix a changé | E-mail d'alerte à Raphaël, objet `[EspaceAuto] ALERTE : annonce modifiée avant publication`, avec la date prévue, l'ancien et le nouveau prix (ou « vendue ») et la marche à suivre : « Supprime ou modifie la publication dans Buffer. » Ajoute « alerte envoyée le <date> » en colonne L pour ne pas la renvoyer. Ne touche pas à Buffer. |
+| Annonce publiée (`Publié`) dont le prix a **baissé** par rapport au prix de référence | Vidéo « Prix en baisse » (ci-dessous). |
+| Prix monté, annonce vendue ou disparue pour une publication passée | Rien. |
+
+**Vidéo « Prix en baisse »** (décision de Raphaël du 26/10/2026, **toujours soumise à son autorisation**) :
+- Même format que les vidéos faites depuis un lien d'annonce : montage des 6 photos de l'annonce avec `habillage.py --photos`,
+  publié en **story** ; accroche `"Prix en baisse|<Marque>|<Modèle>"`, fiche avec le **nouveau** prix et les infos actuelles de l'annonce.
+- Contrôle (agent 3) comme d'habitude, en revérifiant le nouveau prix sur le site.
+- Statut **toujours `A valider`**, même si le contrôle est bon : vidéo dans `a-valider/`, ligne au journal avec en colonne L
+  `Annonce : <lien> — Prix : <nouveau prix> — Baisse de prix : <ancien> -> <nouveau> — Format : story`, requête story en colonne M
+  pour le premier jour libre, puis e-mail « A valider » (étape 7) avec la raison « Baisse de prix de <ancien> à <nouveau> : publication à autoriser ».
+- C'est la seule exception à la règle « une seule publication par annonce ». Une seule vidéo par baisse de prix : si une ligne
+  `Baisse de prix` existe déjà avec ce nouveau prix, ne la refais pas.
+- Une vidéo « Prix en baisse » ne compte pas dans la file tant qu'elle n'est pas validée (comme toute vidéo `A valider`).
+
+## Étape 1 ter — Lire les réponses de Raphaël aux e-mails « A valider »
 
 Les e-mails sont envoyés depuis le compte Gmail de Raphaël vers lui-même : ses réponses et tes messages ont donc la même adresse.
 Tous tes messages commencent par la ligne `[Agent EspaceAuto]` ; un message qui ne commence pas par cette ligne est une réponse de Raphaël.
@@ -63,7 +93,7 @@ Tous tes messages commencent par la ligne `[Agent EspaceAuto]` ; un message qui 
 
 | Réponse de Raphaël | Ce que tu fais |
 | --- | --- |
-| « OK », « oui », « valide », « go », « publie » | Ligne du journal → `Planifié`. Si la date prévue est passée ou prise, choisis le premier jour libre (règles de l'étape 7) et refais la requête Buffer (colonne M) avec la nouvelle date. Vidéo déplacée de `a-valider/` vers `pret-a-publier/` dans le dépôt (et lien colonne G mis à jour). Respecte la limite de 3 : si la file est pleine, laisse en `A valider` avec la remarque « validé, en attente de place » et planifie dès qu'une place se libère. |
+| « OK », « oui », « valide », « go », « publie » | Ligne du journal → `Planifié`. Si la date prévue est passée ou prise, choisis le premier jour libre (règles de l'étape 7) et refais la requête Buffer (colonne M) avec la nouvelle date (en `--format story` si la colonne L contient `Format : story`). Vidéo déplacée de `a-valider/` vers `pret-a-publier/` dans le dépôt (et lien colonne G mis à jour). Respecte la limite de 3 : si la file est pleine, laisse en `A valider` avec la remarque « validé, en attente de place » et planifie dès qu'une place se libère. |
 | « non », « refuse », « pas celle-là » | Statut `Refusé` (Make l'ignore), remarque « refusé par Raphaël le <date> ». Supprime la vidéo du dossier `a-valider/` du dépôt. |
 | Une correction (lien d'annonce, modèle, prix, texte à changer…) | Applique la correction, refais ce qui est concerné (fiche, montage ou texte), puis repasse par le contrôle (agent 3). Si tout est bon → `Planifié` comme pour « OK ». S'il reste un doute → nouvel e-mail « A valider ». |
 | Réponse pas claire | Ne change rien ; réponds en demandant de préciser OK / NON / correction. |
@@ -79,7 +109,7 @@ Tous tes messages commencent par la ligne `[Agent EspaceAuto]` ; un message qui 
 
 **Combien en faire : remplir la file jusqu'à 3.**
 Compte les lignes du journal en `Planifié` ou `Envoyé à Buffer` dont la date de publication n'est pas encore passée.
-- 3 ou plus : la file est pleine. Ne traite rien de nouveau aujourd'hui (seulement le ménage et la surveillance).
+- 3 ou plus : la file est pleine. Ne traite rien de nouveau aujourd'hui (seulement les étapes 1, 1 bis, 1 ter et, le lundi, 8).
 - Moins de 3 : traite des éléments **à la chaîne**, un par un, jusqu'à ce que la file atteigne 3 (ou qu'il n'y ait plus rien).
   Une vidéo qui finit en `A valider` ne compte pas dans la file : passe à l'élément suivant.
 
@@ -121,7 +151,7 @@ si son annonce figure déjà en colonne L d'une ligne `Planifié`, `Envoyé à B
 (ex. `volkswagen-tiguan-2-0-tdi-150ch-dsg7-r-line`), utilise directement cette annonce, sans chercher à identifier le véhicule.
 
 Aucune limite de taille pour les vidéos (jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
-S'il n'y a rien dans aucune des deux sources : pas d'e-mail, fin de l'exécution.
+S'il n'y a rien dans aucune des deux sources : pas d'autre e-mail que les alertes et, le lundi, le récap (étape 8), puis fin de l'exécution.
 
 ## Étape 3 — Télécharger
 
@@ -223,6 +253,18 @@ Dans les deux cas (Validé ou A valider) :
      - ou écrivez la correction (exemple : le lien de la bonne annonce, le bon prix)
      Votre réponse sera prise en compte au prochain passage de l'agent (chaque matin à 9:56).
      ```
+
+## Étape 8 — Récapitulatif du lundi (en dernier, avant le résumé de fin)
+
+Le lundi seulement (même quand la file est pleine et qu'il n'y a rien d'autre à faire), envoie un e-mail à Raphaël :
+- Objet : `[EspaceAuto] Récap de la semaine du <date du lundi précédent> au <date de la veille>`
+- Corps (commence par `[Agent EspaceAuto]`, texte simple, sans emoji) :
+  - publications sorties dans les 7 derniers jours (date, sujet, Reel ou story) ;
+  - publications programmées à venir (date, heure, sujet, format) ;
+  - vidéos en attente de sa réponse (`A valider`), avec la raison ;
+  - ce qui reste à traiter : nombre de fichiers par sous-dossier de « 01 - A traiter » et nombre de liens non traités ;
+  - alertes de la semaine (Make, annonce modifiée, erreurs), ou « aucune ».
+Une seule fois par lundi : si un e-mail avec cet objet existe déjà (recherche Gmail), ne le renvoie pas.
 
 ## Fin d'exécution
 
