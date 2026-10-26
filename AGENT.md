@@ -100,8 +100,16 @@ du plus ancien au plus récent. Un élément = un fichier vidéo ou photo posé 
 3. Pour un lien non traité, lis l'annonce (curl avec en-tête navigateur, voir étape 4) :
    - annonce introuvable (404) ou marquée vendue → ligne au journal en `A valider` avec `Annonce : <lien>` en colonne L
      et la raison, puis e-mail à Raphaël (pour ne pas retraiter le lien chaque jour) ;
-   - sinon, c'est un élément « Presentation » à faire avec les photos de l'annonce (montage photos, étape 4).
+   - sinon, c'est un élément « Presentation » à faire avec les photos de l'annonce (montage photos, étape 4),
+     **publié en story Instagram** (pas en Reel), voir « Format story » ci-dessous.
 4. Écris toujours `Annonce : <lien>` au début de la colonne L de la ligne du journal, quel que soit le statut.
+
+**Format story (décision de Raphaël du 26/10/2026)** : les nouvelles arrivées venant des liens d'annonce (source B) sortent
+en story ; les vidéos déposées (source A) restent en Reel. Une story compte comme une publication : même file
+(3 au maximum en `Planifié` + `Envoyé à Buffer`), même règle d'un seul passage par jour, mêmes créneaux horaires.
+Une story publiée automatiquement par Buffer n'affiche **ni texte, ni lien, ni sticker** : toutes les infos utiles
+(modèle, prix, km, année, téléphone) doivent être lisibles dans la vidéo elle-même, ce que fait `habillage.py`.
+Durée acceptée par Instagram : 3 à 60 s (le montage photos fait environ 20 s).
 
 **Une seule publication par annonce (pas de doublon)** : dès qu'un élément (vidéo déposée ou lien) est rattaché à une annonce
 du site, écris `Annonce : <lien de l'annonce>` au début de la colonne L de sa ligne du journal. Avant de traiter un élément,
@@ -174,6 +182,7 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
 ## Étape 5 — Agent 2 : Texte
 
 Suis `INSTRUCTIONS-RTCE.md` (Agent 2). Écris le texte dans un fichier `texte.txt` (UTF-8, sans emoji).
+Story (source B) : aucun texte n'est publié. Colonne H du journal : `(Story : aucun texte publié)`.
 
 ## Étape 6 — Agent 3 : Contrôle
 
@@ -189,7 +198,10 @@ Dans les deux cas (Validé ou A valider) :
    `Planifié`, `Envoyé à Buffer` ou `Publié` ; une ligne `A valider` ne bloque pas son jour —, jamais 2 publications le même jour,
    au plus 3 lignes `Planifié` + `Envoyé à Buffer` futures, voir étape 2) et l'heure (lun-ven 18:00, sam 11:00, dim 18:30, heure de Paris).
    Convertis en UTC avec Python (`zoneinfo`, Europe/Paris : attention au changement d'heure).
-3. Fabrique la requête : `python3 -I outils/buffer_requete.py --texte texte.txt --url <lien public> --date-utc <ISO UTC>`.
+3. Fabrique la requête :
+   - Reel (source A) : `python3 -I outils/buffer_requete.py --texte texte.txt --url <lien public> --date-utc <ISO UTC>`
+   - Story (source B) : `python3 -I outils/buffer_requete.py --format story --url <lien public> --date-utc <ISO UTC>`
+     et écris `Format : story` dans la colonne L, juste après `Annonce : <lien>`.
 4. Ajoute une ligne au journal (A à M remplies, K vide). Statut : `Planifié` si Validé, `A valider` sinon.
 5. (Source A uniquement ; pour un lien d'annonce, rien à déplacer.) Déplace le fichier ou sous-dossier source du Drive : vers « 05 - Publie » si Validé, vers « 03 - A valider » sinon.
    Renomme-le en commençant par la date (AAAA-MM-JJ_...) pour le retrouver.
