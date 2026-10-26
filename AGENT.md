@@ -217,7 +217,18 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
   - Véhicule vendu : `--vendu` (badge VENDUE permanent, pas de prix, fin « Vous voulez vendre la vôtre ? »).
   - Rush sans voix (images ou vidéos de voiture seules) : `--accroche "Ligne 1|Ligne dorée|Ligne dorée" --musique <mp3> --volume-musique -16`
     (musique douce, environ -27 LUFS ; pas de son d'origine).
-  - Vidéo où quelqu'un parle : `--garder-son` sans musique si la vidéo a déjà un fond sonore ; place `--fiche-debut` quand le véhicule est à l'écran.
+  - Vidéo où quelqu'un parle : `--garder-son` ; place `--fiche-debut` quand le véhicule est à l'écran.
+    - La vidéo a déjà une musique : n'en ajoute pas.
+    - La vidéo n'a pas de musique : ajoute une musique du dossier Musiques **en fond sonore, qui n'étouffe jamais la voix**
+      (règle de Raphaël du 26/10/2026) : `--garder-son --musique <mp3>`. `habillage.py` met alors la musique à -22 dB
+      et la baisse automatiquement chaque fois que la personne parle.
+      Réglage : mesure le volume moyen de la voix et de la musique
+      (`ffmpeg -i <fichier> -af volumedetect -f null -` → `mean_volume`) et règle `--volume-musique` pour que la musique
+      soit **au moins 18 dB sous la voix** : valeur = voix − musique − 18, jamais au-dessus de -22
+      (ex. voix -24 dB, musique -12 dB → -30). Choisis plutôt une musique calme (sans chant, sans grosses percussions).
+    - Contrôle (agent 3) : sur la vidéo finale, la voix doit rester nettement au-dessus de la musique ; mesure le volume
+      d'un passage parlé et d'un passage sans parole (volumedetect avec `-ss`/`-t`) : la musique seule doit être
+      au moins 15 dB plus basse que le passage parlé. Sinon, baisse la musique et refais le montage (Renvoyé à l'agent 1).
   - Plus de 90 s : coupe avec `--debut-source/--fin-source`, ou pose l'intro/la fin sur la vidéo (`--intro-superposee --fin-superposee`).
   - L'ancien `outils/montage.py` (avec floutage des plaques) reste disponible si une vraie plaque avec numéro doit être floutée.
 - Vérification : ouvre `<sortie>_planche.jpg` avec Read et regarde chaque image (textes lisibles, rien de coupé, bon véhicule).

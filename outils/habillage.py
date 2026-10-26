@@ -14,7 +14,11 @@ Options utiles :
   --debut-source / --fin-source : coupe le rush (secondes)
   --intro-superposee / --fin-superposee : l'intro / la fin se posent SUR la vidéo (le son continue), au lieu de s'ajouter
   --fiche-debut S --fiche-duree D : moment (dans la vidéo source coupée) où la fiche s'affiche
-  --musique F --volume-musique dB : musique du dossier Musiques (sinon aucune musique ajoutée)
+  --musique F --volume-musique dB : musique du dossier Musiques (sinon aucune musique ajoutée).
+                          Par défaut -16 dB sans voix ; -22 dB quand le son d'origine est gardé.
+  Musique + voix (--garder-son --musique) : la musique reste un fond sonore. Elle est baissée
+  automatiquement chaque fois que quelqu'un parle (compression déclenchée par la voix), pour ne
+  jamais couvrir la présentation.
   --garder-son / --volume-source dB : son d'origine (voix) conservé
 Produit aussi <sortie>_planche.jpg (12 images réparties) pour le contrôle.
 """
@@ -302,7 +306,7 @@ def main():
     p.add_argument('--debut-source', type=float, default=0); p.add_argument('--fin-source', type=float, default=None)
     p.add_argument('--intro-superposee', action='store_true'); p.add_argument('--fin-superposee', action='store_true')
     p.add_argument('--fiche-debut', type=float, default=1.0); p.add_argument('--fiche-duree', type=float, default=7.0)
-    p.add_argument('--musique', default=None); p.add_argument('--volume-musique', type=float, default=-16)
+    p.add_argument('--musique', default=None); p.add_argument('--volume-musique', type=float, default=None)
     p.add_argument('--garder-son', action='store_true'); p.add_argument('--volume-source', type=float, default=None)
     p.add_argument('--duree-max', type=float, default=90)
     a = p.parse_args()
@@ -368,11 +372,22 @@ def main():
         vs = a.volume_source if a.volume_source is not None else 0
         entrees += ['-ss', str(a.debut_source), '-t', str(d_clip), '-i', a.source]
         ms = int(t_clip * 1000)
-        filtres.append(f'[1:a]volume={vs}dB,afade=t=in:d=0.25,afade=t=out:st={max(0, d_clip - 0.4)}:d=0.4,adelay={ms}|{ms},apad[s]'); mix.append('[s]')
+        voix = a.musique is not None
+        filtres.append(f'[1:a]volume={vs}dB,afade=t=in:d=0.25,afade=t=out:st={max(0, d_clip - 0.4)}:d=0.4,adelay={ms}|{ms},apad'
+                       + (',asplit=2[s][cle]' if voix else '[s]')); mix.append('[s]')
     if a.musique:
-        i = 2 if mix else 1
+        voix = bool(mix)
+        vm = a.volume_musique if a.volume_musique is not None else (-22 if voix else -16)
+        i = 2 if voix else 1
         entrees += ['-i', a.musique]
-        filtres.append(f'[{i}:a]atrim=0:{duree},asetpts=PTS-STARTPTS,volume={a.volume_musique}dB,afade=t=in:d=0.4,afade=t=out:st={duree - 2}:d=2[m]'); mix.append('[m]')
+        base = f'[{i}:a]atrim=0:{duree},asetpts=PTS-STARTPTS,aresample=44100,aformat=channel_layouts=stereo,volume={vm}dB,afade=t=in:d=0.4,afade=t=out:st={duree - 2}:d=2'
+        if voix:  # fond sonore : la musique s'efface quand la voix est présente
+            filtres.append(base + '[mb]')
+            filtres.append('[cle]aresample=44100,aformat=channel_layouts=stereo[cle2]')
+            filtres.append('[mb][cle2]sidechaincompress=threshold=0.01:ratio=8:attack=30:release=500:makeup=1:level_sc=4[m]')
+        else:
+            filtres.append(base + '[m]')
+        mix.append('[m]')
     if not mix:
         entrees += ['-f', 'lavfi', '-t', str(duree), '-i', 'anullsrc=r=44100:cl=stereo']; filtres.append('[1:a]anull[a]')
     elif len(mix) == 1: filtres[-1] = filtres[-1].rsplit('[', 1)[0] + '[a]'
