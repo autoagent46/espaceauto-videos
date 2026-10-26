@@ -242,7 +242,9 @@ Cette grille part de l'habitude actuelle (vers 18 h). Le samedi et le dimanche s
 | Élément | Valeur |
 | --- | --- |
 | Réseau | Instagram uniquement pendant le test (compte de test) |
-| Format | Vidéos déposées dans Drive : Reel. Nouvelles arrivées venant des liens d'annonce : story (sans texte publié, tout est dans la vidéo). Une story compte comme une publication du jour (décision du 26/10/2026) |
+| Format | Vidéos déposées dans Drive : Reel. Nouvelles arrivées venant des liens d'annonce : story (sans texte publié, tout est dans la vidéo). Une story compte comme une publication du jour (décision du 26/10/2026). Story : aucun texte, aucun hashtag (sinon Buffer ne la publie pas) |
+| Roulement | Alterner Reel et story (nouvelle arrivée ou prix en baisse), jamais 3 publications du même format d'affilée |
+| Limite de 3 | Gardée volontairement pour laisser de la place à TikTok et LinkedIn plus tard |
 | Rythme | 1 publication par jour, jamais 2 |
 | Outil | Buffer gratuit (10 publications max en file) ; règle EspaceAuto : 3 publications programmées au maximum |
 | Lien | Make (gratuit) lit le journal et envoie à Buffer |

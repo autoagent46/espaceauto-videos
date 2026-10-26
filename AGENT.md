@@ -107,14 +107,23 @@ Tous tes messages commencent par la ligne `[Agent EspaceAuto]` ; un message qui 
 
 ## Étape 2 — Trouver le travail du jour
 
-**Combien en faire : remplir la file jusqu'à 3.**
+**Combien en faire : remplir la file jusqu'à 3.** (Raphaël garde volontairement cette limite de 3 : elle laisse de la place
+dans Buffer pour TikTok et LinkedIn, qui seront connectés plus tard.)
 Compte les lignes du journal en `Planifié` ou `Envoyé à Buffer` dont la date de publication n'est pas encore passée.
 - 3 ou plus : la file est pleine. Ne traite rien de nouveau aujourd'hui (seulement les étapes 1, 1 bis et 1 ter).
 - Moins de 3 : traite des éléments **à la chaîne**, un par un, jusqu'à ce que la file atteigne 3 (ou qu'il n'y ait plus rien).
   Une vidéo qui finit en `A valider` ne compte pas dans la file : passe à l'élément suivant.
 
-**Deux sources, traitées en alternance** (une vidéo déposée, puis un lien, puis une vidéo…), pour varier les publications
-et ne laisser aucune source attendre l'autre :
+**Roulement Reel / story (règle de Raphaël du 26/10/2026)** : les publications alternent, jour après jour,
+1 Reel (vidéo déposée, source A) puis 1 story (nouvelle arrivée d'un lien, source B, ou « Prix en baisse » validée), puis 1 Reel…
+Pour choisir le prochain élément, regarde le format de la dernière publication programmée ou publiée du journal
+(`Format : story` en colonne L = story ; sinon Reel) et prends l'autre format.
+- Si l'autre format n'a rien à traiter, tu peux prendre le même format, mais **jamais 3 du même format d'affilée**
+  (ni 3 stories, ni 3 Reels de suite). Si la règle bloque, arrête de remplir la file pour aujourd'hui.
+- La même règle s'applique quand tu planifies une vidéo validée par Raphaël (étape 1 ter) : choisis le premier jour libre
+  qui ne crée pas 3 publications du même format d'affilée.
+
+Les deux sources :
 
 *Source A — vidéos et photos déposées* : contenu des 4 sous-dossiers de « 01 - A traiter » (search_files avec `parentId = '<id>'`),
 du plus ancien au plus récent. Un élément = un fichier vidéo ou photo posé directement, ou un sous-dossier (un véhicule = un sous-dossier).
@@ -137,7 +146,9 @@ du plus ancien au plus récent. Un élément = un fichier vidéo ou photo posé 
 **Format story (décision de Raphaël du 26/10/2026)** : les nouvelles arrivées venant des liens d'annonce (source B) sortent
 en story ; les vidéos déposées (source A) restent en Reel. Une story compte comme une publication : même file
 (3 au maximum en `Planifié` + `Envoyé à Buffer`), même règle d'un seul passage par jour, mêmes créneaux horaires.
-Une story publiée automatiquement par Buffer n'affiche **ni texte, ni lien, ni sticker** : toutes les infos utiles
+Une story publiée automatiquement par Buffer n'affiche **ni texte, ni lien, ni sticker**, et **aucun hashtag** :
+avec un texte ou des hashtags, Buffer ne la publie pas automatiquement. La requête story part donc avec un texte vide
+(`buffer_requete.py --format story` le fait) ; ne rajoute jamais de texte ni de hashtag à une story. Toutes les infos utiles
 (modèle, prix, km, année, téléphone) doivent être lisibles dans la vidéo elle-même, ce que fait `habillage.py`.
 Durée acceptée par Instagram : 3 à 60 s (le montage photos fait environ 20 s).
 
@@ -149,6 +160,11 @@ si son annonce figure déjà en colonne L d'une ligne `Planifié`, `Envoyé à B
 
 **Nom de fichier** : si le nom d'une vidéo déposée contient un lien d'annonce ou le nom de l'annonce tel qu'il apparaît dans le lien
 (ex. `volkswagen-tiguan-2-0-tdi-150ch-dsg7-r-line`), utilise directement cette annonce, sans chercher à identifier le véhicule.
+**Vidéo déposée dans « Presentation » sans nom d'annonce** (règle de Raphaël du 26/10/2026) : monte-la quand même (identification
+visuelle comme à l'étape 4 pour remplir la fiche), puis mets-la **toujours en `A valider`** avec la raison « vidéo déposée sans le nom
+de l'annonce : véhicule identifié visuellement, à confirmer ». Exception : les fichiers déjà présents dans « Presentation » le 26/10/2026
+(créés avant le 2026-10-26T00:00:00Z) suivent l'ancienne règle : si une seule annonce correspond sans aucun doute, ils peuvent être planifiés
+sans validation.
 
 Aucune limite de taille pour les vidéos (jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
 S'il n'y a rien dans aucune des deux sources : pas d'autre e-mail que les alertes, puis fin de l'exécution. (Le bilan du lundi est fait par une autre tâche planifiée, « Bilan hebdo EspaceAuto ».)
@@ -182,6 +198,7 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
 - Vidéo déposée sans nom de véhicule (fichier posé directement dans Presentation, nom du type IMG_1234.MOV) :
   identifie le véhicule en comparant la vidéo (marque, modèle, couleur, jantes) aux annonces du site.
   Une seule annonce correspond sans aucun doute → continue avec ses infos. Plusieurs possibles ou aucune → `A valider`.
+  Dans tous les cas, la vidéo finit en `A valider` (sauf fichiers antérieurs au 26/10/2026, voir « Nom de fichier » à l'étape 2).
 - Transcription (vidéo où quelqu'un parle, obligatoire pour Conseil) : essaie
   `pip install --break-system-packages faster-whisper` puis un modèle « small » en français.
   Si l'installation ou le téléchargement du modèle échoue → la vidéo passe en `A valider` avec la raison
