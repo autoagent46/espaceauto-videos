@@ -109,7 +109,7 @@ Tous tes messages commencent par la ligne `[Agent EspaceAuto]` ; un message qui 
 
 **Combien en faire : remplir la file jusqu'à 3.**
 Compte les lignes du journal en `Planifié` ou `Envoyé à Buffer` dont la date de publication n'est pas encore passée.
-- 3 ou plus : la file est pleine. Ne traite rien de nouveau aujourd'hui (seulement les étapes 1, 1 bis, 1 ter et, le lundi, 8).
+- 3 ou plus : la file est pleine. Ne traite rien de nouveau aujourd'hui (seulement les étapes 1, 1 bis et 1 ter).
 - Moins de 3 : traite des éléments **à la chaîne**, un par un, jusqu'à ce que la file atteigne 3 (ou qu'il n'y ait plus rien).
   Une vidéo qui finit en `A valider` ne compte pas dans la file : passe à l'élément suivant.
 
@@ -151,7 +151,7 @@ si son annonce figure déjà en colonne L d'une ligne `Planifié`, `Envoyé à B
 (ex. `volkswagen-tiguan-2-0-tdi-150ch-dsg7-r-line`), utilise directement cette annonce, sans chercher à identifier le véhicule.
 
 Aucune limite de taille pour les vidéos (jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
-S'il n'y a rien dans aucune des deux sources : pas d'autre e-mail que les alertes et, le lundi, le récap (étape 8), puis fin de l'exécution.
+S'il n'y a rien dans aucune des deux sources : pas d'autre e-mail que les alertes, puis fin de l'exécution. (Le bilan du lundi est fait par une autre tâche planifiée, « Bilan hebdo EspaceAuto ».)
 
 ## Étape 3 — Télécharger
 
@@ -253,18 +253,6 @@ Dans les deux cas (Validé ou A valider) :
      - ou écrivez la correction (exemple : le lien de la bonne annonce, le bon prix)
      Votre réponse sera prise en compte au prochain passage de l'agent (chaque matin à 9:56).
      ```
-
-## Étape 8 — Récapitulatif du lundi (en dernier, avant le résumé de fin)
-
-Le lundi seulement (même quand la file est pleine et qu'il n'y a rien d'autre à faire), envoie un e-mail à Raphaël :
-- Objet : `[EspaceAuto] Récap de la semaine du <date du lundi précédent> au <date de la veille>`
-- Corps (commence par `[Agent EspaceAuto]`, texte simple, sans emoji) :
-  - publications sorties dans les 7 derniers jours (date, sujet, Reel ou story) ;
-  - publications programmées à venir (date, heure, sujet, format) ;
-  - vidéos en attente de sa réponse (`A valider`), avec la raison ;
-  - ce qui reste à traiter : nombre de fichiers par sous-dossier de « 01 - A traiter » et nombre de liens non traités ;
-  - alertes de la semaine (Make, annonce modifiée, erreurs), ou « aucune ».
-Une seule fois par lundi : si un e-mail avec cet objet existe déjà (recherche Gmail), ne le renvoie pas.
 
 ## Fin d'exécution
 
