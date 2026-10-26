@@ -161,13 +161,17 @@ si son annonce figure déjà en colonne L d'une ligne `Planifié`, `Envoyé à B
 **Nom de fichier** : si le nom d'une vidéo déposée contient un lien d'annonce ou le nom de l'annonce tel qu'il apparaît dans le lien
 (ex. `volkswagen-tiguan-2-0-tdi-150ch-dsg7-r-line`), utilise directement cette annonce, sans chercher à identifier le véhicule.
 **Vidéo déposée dans « Presentation » sans nom d'annonce** (règle de Raphaël du 26/10/2026) : Raphaël ne renomme pas les fichiers,
-c'est toi qui le fais. Identifie le véhicule visuellement (étape 4) ; dès qu'une seule annonce correspond, **renomme le fichier dans Drive**
-(update_file, champ title) avec le nom de l'annonce tel qu'il apparaît dans son lien, en gardant l'extension
-(ex. `seat-leon-2-0-tdi-150-dsg7-style.mp4`). Si plusieurs annonces sont possibles ou aucune, ne renomme pas.
-Monte-la ensuite, puis mets-la **toujours en `A valider`** avec la raison « vidéo déposée sans le nom
-de l'annonce : véhicule identifié visuellement, à confirmer ». Exception : les fichiers déjà présents dans « Presentation » le 26/10/2026
-(créés avant le 2026-10-26T00:00:00Z) suivent l'ancienne règle : si une seule annonce correspond sans aucun doute, ils peuvent être planifiés
-sans validation.
+c'est toi qui le fais.
+1. Identifie le véhicule visuellement (étape 4) en le comparant aux annonces du site.
+2. **Modèles très proches** (même modèle en plusieurs motorisations ou finitions, par exemple plusieurs Volkswagen Tiguan) :
+   compare en détail la vidéo aux **photos de chaque annonce candidate** (télécharge-les) : couleur, jantes, calandre et boucliers,
+   badges et monogrammes (TDI, R-Line…), sellerie et couleur intérieure, tableau de bord, toit, détails de carrosserie.
+3. **Sûr** (une seule annonce correspond, sans aucun doute) : **renomme le fichier dans Drive** (update_file, champ title) avec le nom
+   de l'annonce tel qu'il apparaît dans son lien, en gardant l'extension (ex. `seat-leon-2-0-tdi-150-dsg7-style.mp4`),
+   puis traite la vidéo normalement : elle peut être planifiée sans validation si le contrôle (agent 3) est bon.
+   Note dans la colonne L comment l'annonce a été identifiée (ex. « identifiée visuellement : jantes et badge R-Line »).
+4. **Toujours un doute** après la comparaison des photos : ne renomme pas, monte la vidéo, puis `A valider` avec la raison
+   « deux annonces possibles : <lien 1> / <lien 2> » (ou « aucune annonce trouvée »).
 
 Aucune limite de taille pour les vidéos (jusqu'à plusieurs centaines de Mo) : voir l'étape 3.
 S'il n'y a rien dans aucune des deux sources : pas d'autre e-mail que les alertes, puis fin de l'exécution. (Le bilan du lundi est fait par une autre tâche planifiée, « Bilan hebdo EspaceAuto ».)
@@ -201,7 +205,7 @@ Suis `INSTRUCTIONS-RTCE.md` (Agent 1). Côté technique :
 - Vidéo déposée sans nom de véhicule (fichier posé directement dans Presentation, nom du type IMG_1234.MOV) :
   identifie le véhicule en comparant la vidéo (marque, modèle, couleur, jantes) aux annonces du site.
   Une seule annonce correspond sans aucun doute → continue avec ses infos. Plusieurs possibles ou aucune → `A valider`.
-  Dans tous les cas, la vidéo finit en `A valider` (sauf fichiers antérieurs au 26/10/2026, voir « Nom de fichier » à l'étape 2).
+  Détail (modèles proches, renommage du fichier) : voir « Vidéo déposée dans Presentation sans nom d'annonce » à l'étape 2.
 - Transcription (vidéo où quelqu'un parle, obligatoire pour Conseil) : essaie
   `pip install --break-system-packages faster-whisper` puis un modèle « small » en français.
   Si l'installation ou le téléchargement du modèle échoue → la vidéo passe en `A valider` avec la raison
